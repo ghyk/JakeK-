@@ -16,8 +16,22 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+    },
+    contentSecurityPolicy: {
+      'default-src': "'self' ",
+      'script-src': "'self' ", 
+
+      'font-src': "'self' http: https:",
+
+      'connect-src': "'self' ",
+
+      'img-src': "'self' http: https:",
+      'style-src': "'self' ",
+      'media-src': "'self' "
     }
+
   };
+  
 
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
