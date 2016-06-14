@@ -1,12 +1,13 @@
 
 <div class="container">
 	<h2 id="title">Flickr feed:</h2>
-	<ul>
+	<u1 class="list-group">
 	{{#each photo in photos}}
-		<li>
+		<li class="list-group-item">
 			{{photo.title}} ({{photo.username}})<br>
-			<img src={{photo.url}} />
+
+			<img class="feed-img" src={{photo.url}} />
 		</li>
 	{{/each}}
-	</ul>
+	</u1>
 </div>
