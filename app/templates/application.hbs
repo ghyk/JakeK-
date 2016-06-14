@@ -5,8 +5,14 @@
 		</div>
 		<div class="navbar-right search-field">
 				{{#bs-form formLayout="inline" action="search"}}
-					<label class="control-label">Search By Name:</label>
-					{{bs-input type="text" value=searchField}}
+						{{#bs-button type="primary" icon="glyphicon glyphicon-download" action="getPhotos"}}{{/bs-button}}
+						
+					{{bs-input type="text" value=searchField placeholder="search something"}}
+
+					<button type="submit" class="btn btn-default">
+						<span class="glyphicon glyphicon-search" aria-hidden="true">
+</span>
+					</button>
 			{{/bs-form}}
 		</div>
 	</div>
