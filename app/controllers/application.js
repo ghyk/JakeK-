@@ -35,25 +35,26 @@ export default Ember.Controller.extend ({
 	}.property('photos.@each','searchField'),
 	actions: {
 		search: function () {
-				this.get('filteredPhotos');
+				this.get('photos').content.clear();
+				this.store.unloadAll('photo')
+				this.send('getPhotos',this.get('tagSearchField'));
+
 		},
-		getPhotos: function(){
+		getPhotos: function(tag){
 	var apiKey = '828f7dd0ab21e6018c8da457ff4b1e4e';
 	var host = 'https://api.flickr.com/services/rest/';
 	var method = "flickr.tags.getClusterPhotos";
-	var tag = "hi";
 	var requestURL = host + "?method="+method + "&api_key="+apiKey+"&tag="+tag+"&format=json&nojsoncallback=1";
 	var photos = this.get('photos');
+	var t = this;
 	Ember.$.getJSON(requestURL, function(data){
-		//callback for successfully completed requests
+		
 		console.log(data);
 		data.photos.photo.map(function(photo) {
 			var newPhotoItem = Photo.create({
 				title: photo.title,
 				username: photo.username,
-				//flickr extra data
 				owner: photo.owner,
-				//flickr url data
 				id: photo.id,
 				farm: photo.farm,
 				secret: photo.secret,
