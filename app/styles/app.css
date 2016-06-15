@@ -9,4 +9,8 @@ body { padding-top: 70px; }
 .tag-button {
 	padding:4px;
 	margin: 1px;
+},
+.post-tag-button {
+	padding:2px;
+	margin-top: 1px;
 }
