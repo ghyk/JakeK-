@@ -33,6 +33,9 @@
 			<h1>ayy</h1>
 			<p>Created by Jake</p>
 			<p>Search for a flickr tag to load the most recent images</p>
+			{{#each tag in tagList}}
+				<button class= "btn btn-info tag-button" {{action "clicktag" tag}}>{{tag}}</button>
+				{{/each}}
 	</div>
 	{{/if}}
 </div>

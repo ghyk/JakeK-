@@ -1,19 +1,5 @@
 import Ember from 'ember';
 
-var Photo = Ember.Object.extend({
-	title: '',
-	username: '',
-	owner: '',
-	id: '',
-	farm: 0,
-	secret: '',
-	server: '',
-	url: function(){
-		return "https://farm"+this.get('farm')+
-		".staticflickr.com/"+this.get('server')+
-		"/"+this.get('id')+"_"+this.get('secret')+"_b.jpg";
-	}.property('farm','server','id','secret'),
-});
 
 var PhotoCollection = Ember.ArrayProxy.extend(Ember.SortableMixin, {
 		sortProperties: ['title'],
@@ -24,6 +10,8 @@ var PhotoCollection = Ember.ArrayProxy.extend(Ember.SortableMixin, {
 export default Ember.Controller.extend ({
 	photos: PhotoCollection.create(),
 	searchField: '',
+	tagList: ['hi','papajohn'],
+
 	filteredPhotos: function () {
 		var filter = this.get('searchField');
 		var rx = new RegExp(filter, 'gi');
@@ -33,14 +21,36 @@ export default Ember.Controller.extend ({
 			return photo.get('title').match(rx) || photo.get('username').match(rx);
 		});
 	}.property('photos.@each','searchField'),
+	init: function(){
+	this._super.apply(this, arguments);
+	var apiKey = '828f7dd0ab21e6018c8da457ff4b1e4e';
+	var host = 'https://api.flickr.com/services/rest/';
+	var method = "flickr.tags.getHotList";
+	var requestURL = host + "?method="+method + "&api_key="+apiKey+"&count=75&format=json&nojsoncallback=1";
+	var t = this;
+	Ember.$.getJSON(requestURL, function(data){
+		//callback for successfully completed requests
+		console.log(data);
+		data.hottags.tag.map(function(tag) {
+			t.get('tagList').pushObject(tag._content);
+		});
+	});
+},
 	actions: {
 		search: function () {
 				this.get('photos').content.clear();
-				this.store.unloadAll('photo')
+				this.store.unloadAll('photo');
 				this.send('getPhotos',this.get('tagSearchField'));
 
 		},
-		getPhotos: function(tag){
+		clicktag: function(tag){
+			this.set('tagSearchField', tag);
+			this.get('photos').content.clear();
+			this.store.unloadAll('photo');
+			this.send('getPhotos',tag);
+		},
+		
+getPhotos: function(tag){
 	var apiKey = '828f7dd0ab21e6018c8da457ff4b1e4e';
 	var host = 'https://api.flickr.com/services/rest/';
 	var method = "flickr.tags.getClusterPhotos";
@@ -51,10 +61,12 @@ export default Ember.Controller.extend ({
 		
 		console.log(data);
 		data.photos.photo.map(function(photo) {
-			var newPhotoItem = Photo.create({
+			var newPhotoItem = t.store.createRecord('photo',{
 				title: photo.title,
 				username: photo.username,
+				//flickr extra data
 				owner: photo.owner,
+				//flickr url data
 				id: photo.id,
 				farm: photo.farm,
 				secret: photo.secret,
