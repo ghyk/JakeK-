@@ -9,9 +9,12 @@ var PhotoCollection = Ember.ArrayProxy.extend(Ember.SortableMixin, {
 
 export default Ember.Controller.extend ({
 	photos: PhotoCollection.create(),
-	searchField: '',
-	tagList: ['hi','papajohn'],
-
+	tagearchField: '',
+	tagList: [],
+	filteredPhotosLoaded: function(){
+	return this.get('filteredPhotos').length >0;
+}.property('filteredPhotos.length'),
+	
 	filteredPhotos: function () {
 	var filter = this.get('searchField');
 	var rx = new RegExp(filter, 'gi');
@@ -30,7 +33,6 @@ export default Ember.Controller.extend ({
 		var requestURL = host + "?method="+method + "&api_key="+apiKey+"&count=75&format=json&nojsoncallback=1";
 		var t = this;
 		Ember.$.getJSON(requestURL, function(data){
-			//callback for successfully completed requests
 			console.log(data);
 			data.hottags.tag.map(function(tag) {
 				t.get('tagList').pushObject(tag._content);
@@ -39,17 +41,19 @@ export default Ember.Controller.extend ({
 	},
 	actions: {
 		search: function () {
-				this.get('photos').content.clear();
-				this.store.unloadAll('photo');
-				this.send('getPhotos',this.get('tagSearchField'));
-
+			this.set('loading', true);
+			this.get('photos').content.clear();
+			this.store.unloadAll('photo');
+			this.send('getPhotos',this.get('tagSearchField'));
 		},
 		clicktag: function(tag){
 			this.set('tagSearchField', tag);
+			this.set('loading', true);
 			this.get('photos').content.clear();
 			this.store.unloadAll('photo');
 			this.send('getPhotos',tag);
 		},
+
 		getPhotos: function(tag){
 			var apiKey = '828f7dd0ab21e6018c8da457ff4b1e4e';
 			var host = 'https://api.flickr.com/services/rest/';
